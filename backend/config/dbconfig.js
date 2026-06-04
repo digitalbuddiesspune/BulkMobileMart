@@ -10,6 +10,11 @@ const connectDB = async () => {
     return conn;
   } catch (error) {
     console.error("MongoDB connection error:", error.message);
+    if (error.message.includes("bad auth")) {
+      console.error(
+        "Check MONGODB_URI in .env: copy a fresh connection string from Atlas (Connect → Drivers), confirm the DB user exists under Database Access, and URL-encode special characters in the password (e.g. @ → %40)."
+      );
+    }
     process.exit(1);
   }
 };

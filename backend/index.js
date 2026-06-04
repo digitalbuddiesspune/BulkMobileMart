@@ -1,6 +1,8 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import connectDB from "./config/dbconfig.js";
+import heroBannerRoutes from "./routes/heroBannerRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -11,6 +13,8 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.json({ message: "BulkMobileMart API is running" });
 });
+
+app.use("/api/herobanners", heroBannerRoutes);
 
 connectDB().then(() => {
   app.listen(PORT, () => {
