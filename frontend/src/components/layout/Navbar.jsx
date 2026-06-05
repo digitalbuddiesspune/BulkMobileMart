@@ -1,51 +1,210 @@
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link, NavLink } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import AuthModal from "../auth/AuthModal";
+import Header from "./Header";
 
-const LOGO_URL =
-  "https://res.cloudinary.com/dsafvwkrf/image/upload/v1780561447/Bulkmobilemart_logo_2-removebg-preview_wcso0k.png";
+const NAV_LINKS = [
+  { to: "/", label: "Home", end: true },
+  { to: "/about", label: "About" },
+  { to: "/contact", label: "Contact" },
+  { to: "/blog", label: "Blog" },
+  { to: "/product", label: "Product" },
+];
 
-const navLinkClass = ({ isActive }) =>
-  `font-medium transition ${
-    isActive ? "text-accent" : "text-gray-700 hover:text-accent"
+const bottomNavClass = ({ isActive }) =>
+  `inline-flex items-center h-12 px-5 xl:px-6 text-xs font-semibold tracking-[0.15em] uppercase transition border-b-[3px] whitespace-nowrap ${
+    isActive
+      ? "text-accent border-accent"
+      : "text-white border-transparent hover:text-accent"
+  }`;
+
+const mobileNavClass = ({ isActive }) =>
+  `block py-2.5 font-medium uppercase tracking-wide transition ${
+    isActive ? "text-accent" : "text-neutral-300 hover:text-accent"
   }`;
 
 function Navbar() {
-  return (
-    <nav className="bg-white sticky top-0 z-50 border-b border-gray-200 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 py-2 flex flex-wrap items-center justify-between gap-3">
-        <Link to="/" className="flex items-center group">
-          <img
-            src={LOGO_URL}
-            alt="BulkMobileMart.in - Smart Choice, Best Price"
-            className="h-9 md:h-10 w-auto object-contain group-hover:opacity-90 transition"
-          />
-        </Link>
+  const { user, logout } = useAuth();
+  const [authModal, setAuthModal] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuTop, setMenuTop] = useState(0);
+  const headerBarRef = useRef(null);
 
-        <ul className="flex flex-wrap items-center gap-6">
-          <li>
-            <NavLink to="/" end className={navLinkClass}>
-              Home
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/about" className={navLinkClass}>
-              About
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/contact" className={navLinkClass}>
-              Contact
-            </NavLink>
-          </li>
-        </ul>
+  const updateMenuTop = () => {
+    if (headerBarRef.current) {
+      setMenuTop(headerBarRef.current.getBoundingClientRect().bottom);
+    }
+  };
 
-        <Link
-          to="/contact"
-          className="rounded-lg bg-accent text-white px-5 py-2.5 text-sm font-semibold hover:brightness-110 transition"
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    updateMenuTop();
+    window.addEventListener("resize", updateMenuTop);
+    return () => window.removeEventListener("resize", updateMenuTop);
+  }, [menuOpen]);
+
+  const closeMenu = () => setMenuOpen(false);
+
+  const handleLoginClick = () => {
+    if (user) return;
+    setAuthModal("login");
+  };
+
+  const mobileMenu =
+    menuOpen &&
+    createPortal(
+      <>
+        <button
+          type="button"
+          aria-label="Close menu"
+          className="md:hidden fixed inset-0 z-[90] bg-black/50"
+          style={{ top: menuTop }}
+          onClick={closeMenu}
+        />
+        <div
+          className="md:hidden fixed left-0 right-0 z-[100] bg-[#111111] border-t border-neutral-800 px-4 py-4 overflow-y-auto shadow-xl"
+          style={{ top: menuTop, maxHeight: `calc(100vh - ${menuTop}px)` }}
         >
-          Get Bulk Quote
-        </Link>
+          <ul className="space-y-1 mb-4 border-b border-neutral-800 pb-4">
+            {NAV_LINKS.map((link) => (
+              <li key={link.to}>
+                <NavLink
+                  to={link.to}
+                  end={link.end}
+                  className={mobileNavClass}
+                  onClick={closeMenu}
+                >
+                  {link.label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+
+          <div className="space-y-3">
+            <a
+              href="tel:+919876543210"
+              className="flex items-center gap-2 text-sm text-neutral-300 hover:text-accent transition"
+            >
+              <svg className="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+              +91 98765 43210
+            </a>
+
+            <Link
+              to="/contact"
+              onClick={closeMenu}
+              className="flex items-center gap-3 w-full rounded-lg border border-neutral-700 text-white px-4 py-2.5 text-sm font-semibold hover:border-accent hover:text-accent transition"
+            >
+              <span className="relative inline-flex">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                </svg>
+                <span className="absolute -top-1.5 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[9px] font-bold text-white">
+                  0
+                </span>
+              </span>
+              My Cart
+            </Link>
+
+            {user ? (
+              <>
+                <p className="text-sm text-neutral-300">Hi, {user.name}</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    logout();
+                    closeMenu();
+                  }}
+                  className="w-full rounded-lg border border-neutral-700 text-white px-4 py-2.5 text-sm font-semibold hover:border-accent hover:text-accent transition"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setAuthModal("login");
+                  closeMenu();
+                }}
+                className="flex items-center justify-center gap-2 w-full rounded-lg border border-neutral-700 text-white px-4 py-2.5 text-sm font-semibold hover:border-accent hover:text-accent transition"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+                Login / Sign Up
+              </button>
+            )}
+
+            <Link
+              to="/contact"
+              onClick={closeMenu}
+              className="block w-full text-center rounded-lg bg-accent text-white px-4 py-2.5 text-sm font-bold uppercase tracking-wide hover:brightness-110 transition"
+            >
+              Bulk Enquiry
+            </Link>
+          </div>
+        </div>
+      </>,
+      document.body
+    );
+
+  return (
+    <>
+      <div ref={headerBarRef}>
+        <Header
+          user={user}
+          onLoginClick={handleLoginClick}
+          onMenuToggle={() => setMenuOpen((o) => !o)}
+          menuOpen={menuOpen}
+        />
       </div>
-    </nav>
+
+      <nav className="hidden md:block bg-[#111111] border-t border-neutral-800/60">
+        <div className="max-w-[1600px] mx-auto px-6 lg:px-10 flex items-center justify-between">
+          <ul className="flex items-center">
+            {NAV_LINKS.map((link, index) => (
+              <li key={link.to} className="flex items-center">
+                {index > 0 && (
+                  <span className="w-px h-4 bg-neutral-700/80 shrink-0" aria-hidden="true" />
+                )}
+                <NavLink to={link.to} end={link.end} className={bottomNavClass}>
+                  {link.label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+
+          <Link
+            to="/contact"
+            className="shrink-0 rounded-lg bg-accent text-white px-6 py-2.5 text-xs font-bold tracking-[0.12em] uppercase hover:brightness-110 transition shadow-sm"
+          >
+            Bulk Enquiry
+          </Link>
+        </div>
+      </nav>
+
+      {mobileMenu}
+
+      {authModal && (
+        <AuthModal
+          mode={authModal}
+          onClose={() => setAuthModal(null)}
+          onSwitchMode={setAuthModal}
+        />
+      )}
+    </>
   );
 }
 

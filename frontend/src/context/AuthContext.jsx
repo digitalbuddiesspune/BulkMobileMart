@@ -1,0 +1,86 @@
+import { createContext, useContext, useEffect, useState } from "react";
+import { getMe, loginUser, signupUser } from "../api/api";
+
+const AuthContext = createContext(null);
+
+const STORAGE_KEY = "bmm_auth";
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const persistAuth = (authUser, authToken) => {
+    setUser(authUser);
+    setToken(authToken);
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ user: authUser, token: authToken })
+    );
+  };
+
+  const clearAuth = () => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem(STORAGE_KEY);
+  };
+
+  useEffect(() => {
+    const initAuth = async () => {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (!stored) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const { token: savedToken } = JSON.parse(stored);
+        if (!savedToken) {
+          clearAuth();
+          setLoading(false);
+          return;
+        }
+
+        setToken(savedToken);
+        const res = await getMe();
+        persistAuth(res.data.data, savedToken);
+      } catch {
+        clearAuth();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initAuth();
+  }, []);
+
+  const signup = async (data) => {
+    const res = await signupUser(data);
+    persistAuth(res.data.data.user, res.data.data.token);
+    return res.data;
+  };
+
+  const login = async (data) => {
+    const res = await loginUser(data);
+    persistAuth(res.data.data.user, res.data.data.token);
+    return res.data;
+  };
+
+  const logout = () => {
+    clearAuth();
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, token, loading, signup, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within AuthProvider");
+  }
+  return context;
+}

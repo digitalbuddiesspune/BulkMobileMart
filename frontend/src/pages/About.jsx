@@ -1,9 +1,9 @@
 function About() {
   return (
     <div className="bg-black text-white">
-      <section className="py-16 md:py-20 px-4 border-b border-neutral-800">
+      <section className="py-10 sm:py-16 md:py-20 px-3 sm:px-4 border-b border-neutral-800">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl font-bold mb-6">About BulkMobileMart</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">About BulkMobileMart</h1>
           <p className="text-neutral-400 text-lg max-w-3xl leading-relaxed">
             BulkMobileMart was built for businesses that sell mobiles — not
             end-customers shopping one phone at a time. We connect retailers,
@@ -13,7 +13,7 @@ function About() {
         </div>
       </section>
 
-      <section className="py-16 px-4 border-b border-neutral-800">
+      <section className="py-10 sm:py-16 px-3 sm:px-4 border-b border-neutral-800">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-10">
           <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-8">
             <h2 className="text-xl font-bold mb-3">Our Mission</h2>
@@ -35,7 +35,7 @@ function About() {
         </div>
       </section>
 
-      <section className="py-16 px-4">
+      <section className="py-10 sm:py-12 px-3 sm:px-4">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-2xl font-bold mb-6">What We Offer</h2>
           <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-neutral-300">

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 function Footer() {
   return (
     <footer className="bg-black border-t border-neutral-800 text-neutral-400">
-      <div className="max-w-7xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-3 gap-10">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-8 sm:py-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 sm:gap-10">
         <div>
           <h3 className="text-white font-bold text-lg mb-3">BulkMobileMart</h3>
           <p className="text-sm leading-relaxed">
@@ -27,8 +27,28 @@ function Footer() {
               </Link>
             </li>
             <li>
+              <Link to="/product" className="hover:text-accent transition">
+                Products
+              </Link>
+            </li>
+            <li>
+              <Link to="/blog" className="hover:text-accent transition">
+                Blog
+              </Link>
+            </li>
+            <li>
               <Link to="/contact" className="hover:text-accent transition">
                 Contact
+              </Link>
+            </li>
+            <li>
+              <Link to="/privacy-policy" className="hover:text-accent transition">
+                Privacy Policy
+              </Link>
+            </li>
+            <li>
+              <Link to="/terms-and-conditions" className="hover:text-accent transition">
+                Terms & Conditions
               </Link>
             </li>
           </ul>

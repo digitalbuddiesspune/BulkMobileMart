@@ -26,10 +26,10 @@ function Contact() {
 
   return (
     <div className="bg-black text-white">
-      <section className="py-16 md:py-20 px-4 border-b border-neutral-800">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16">
+      <section className="py-10 sm:py-16 md:py-20 px-3 sm:px-4 border-b border-neutral-800">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16">
           <div>
-            <h1 className="text-4xl font-bold mb-4">Contact Us</h1>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">Contact Us</h1>
             <p className="text-neutral-400 mb-8 leading-relaxed">
               Tell us the brands, models, and quantity you need. We respond to
               bulk enquiries within one business day.
@@ -67,7 +67,7 @@ function Contact() {
 
           <form
             onSubmit={handleSubmit}
-            className="rounded-2xl border border-neutral-800 bg-neutral-900 p-8 space-y-5"
+            className="rounded-2xl border border-neutral-800 bg-neutral-900 p-5 sm:p-8 space-y-4 sm:space-y-5"
           >
             <h2 className="text-xl font-bold mb-2">Request Bulk Quote</h2>
             <input
@@ -123,7 +123,7 @@ function Contact() {
         </div>
       </section>
 
-      <section className="py-12 px-4 text-center border-t border-neutral-800">
+      <section className="py-8 sm:py-12 px-3 sm:px-4 text-center border-t border-neutral-800">
         <p className="text-neutral-400 max-w-xl mx-auto">
           Prefer WhatsApp? Message us at{" "}
           <a href="tel:+919876543210" className="text-accent hover:underline">
