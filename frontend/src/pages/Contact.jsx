@@ -26,10 +26,10 @@ function Contact() {
 
   return (
     <div className="bg-black text-white">
-      <section className="py-10 sm:py-16 md:py-20 px-3 sm:px-4 border-b border-neutral-800">
+      <section className="page-hero-section px-3 sm:px-4">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16">
           <div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">Contact Us</h1>
+            <h1 className="page-title">Contact Us</h1>
             <p className="text-neutral-400 mb-8 leading-relaxed">
               Tell us the brands, models, and quantity you need. We respond to
               bulk enquiries within one business day.

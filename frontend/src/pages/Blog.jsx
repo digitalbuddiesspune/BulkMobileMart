@@ -28,9 +28,9 @@ const posts = [
 function Blog() {
   return (
     <div className="bg-black text-white">
-      <section className="py-10 sm:py-16 md:py-20 px-3 sm:px-4 border-b border-neutral-800">
+      <section className="page-hero-section px-3 sm:px-4">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">Blog</h1>
+          <h1 className="page-title">Blog</h1>
           <p className="text-neutral-400 text-lg max-w-3xl leading-relaxed">
             Tips, trends, and insights for mobile retailers, distributors, and bulk
             buyers across India.

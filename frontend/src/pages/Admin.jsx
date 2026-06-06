@@ -69,7 +69,7 @@ function Admin() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <div className="bg-white text-gray-900 px-4 py-3 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3">
+      <div className="bg-light-bg text-gray-900 px-4 py-3 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-xl font-bold">Hero Banner Admin</h1>
         <Link to="/" className="text-purple-600 font-medium hover:underline">
           ← Back to Home

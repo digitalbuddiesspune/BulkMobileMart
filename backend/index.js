@@ -4,6 +4,9 @@ import cors from "cors";
 import connectDB from "./config/dbconfig.js";
 import heroBannerRoutes from "./routes/heroBannerRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import cartRoutes from "./routes/cartRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,6 +26,9 @@ app.get("/", (req, res) => {
 
 app.use("/api/herobanners", heroBannerRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/cart", cartRoutes);
 
 connectDB().then(() => {
   app.listen(PORT, () => {

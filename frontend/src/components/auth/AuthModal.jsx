@@ -58,7 +58,7 @@ function EyeIcon({ open }) {
 }
 
 const inputClass =
-  "w-full rounded-lg border border-gray-200 bg-white text-black text-sm py-2.5 placeholder:text-gray-400 focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-200";
+  "w-full rounded-lg border border-gray-200 bg-light-bg text-black text-sm py-2.5 placeholder:text-gray-400 focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-200";
 const labelClass = "block text-sm font-semibold text-black mb-1.5";
 
 function AuthModal({ mode, onClose, onSwitchMode }) {
@@ -158,7 +158,7 @@ function AuthModal({ mode, onClose, onSwitchMode }) {
       aria-labelledby="auth-modal-title"
     >
       <div
-        className="relative w-full max-w-[400px] my-auto rounded-xl sm:rounded-2xl bg-white text-black shadow-2xl mx-2 sm:mx-0"
+        className="relative w-full max-w-[400px] my-auto rounded-xl sm:rounded-2xl bg-light-bg text-black shadow-2xl mx-2 sm:mx-0"
         onClick={(e) => e.stopPropagation()}
       >
         <button

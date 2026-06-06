@@ -12,18 +12,22 @@ const STEPS = [
 const FAQS = [
   {
     question: "Do you provide GST invoices?",
+    questionShort: "GST invoice?",
     answer: "Yes, we provide proper GST invoices for all bulk orders.",
   },
   {
     question: "What is the minimum order quantity?",
-    answer: "Minimum order is 10 units for most smartphone models.",
+    questionShort: "Min. order?",
+    answer: "Minimum order quantity depends on the product — check the product page or contact us for details.",
   },
   {
     question: "Do you deliver across India?",
+    questionShort: "Pan-India?",
     answer: "Yes, we deliver pan-India via trusted courier partners.",
   },
   {
     question: "How can I place a bulk order?",
+    questionShort: "Bulk order?",
     answer: "Browse products, request a quote, or contact our sales team directly.",
   },
 ];
@@ -34,21 +38,21 @@ const PHONES_IMAGE =
 function HowItWorksBulkQuote() {
   return (
     <section className="flex flex-col lg:flex-row w-full">
-      <div className="flex-1 bg-[#F9F9F9]">
+      <div className="flex-1 bg-black">
         <div className="px-4 sm:px-8 md:px-12 lg:px-16 py-8 md:py-10">
           <h2 className="text-accent font-bold text-base md:text-lg tracking-wide mb-8">
             HOW IT WORKS
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-2 md:gap-3 max-w-4xl">
-            {STEPS.map((step, index) => (
+            {STEPS.map((step) => (
               <div key={step.num} className="flex flex-col items-center text-center">
                 <span className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-accent text-white font-bold text-sm mb-2 sm:mb-3 shrink-0">
                   {step.num}
                 </span>
-                <h3 className="font-bold text-black text-xs sm:text-sm leading-tight mb-1">
+                <h3 className="font-bold text-white text-xs sm:text-sm leading-tight mb-1">
                   {step.title}
                 </h3>
-                <p className="text-[10px] sm:text-xs text-gray-500 leading-snug">
+                <p className="text-[10px] sm:text-xs text-neutral-400 leading-snug">
                   {step.desc}
                 </p>
               </div>
@@ -91,7 +95,7 @@ function FAQSection() {
   const [openIndex, setOpenIndex] = useState(null);
 
   return (
-    <section className="bg-white px-3 sm:px-6 md:px-8 lg:px-12 pb-10 md:pb-12">
+    <section className="bg-black px-3 sm:px-6 md:px-8 lg:px-12 py-8 md:py-10 pb-10 md:pb-12">
       <div className="max-w-[1600px] mx-auto">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <h2 className="text-accent font-bold text-base md:text-lg tracking-wide">
@@ -108,32 +112,41 @@ function FAQSection() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <div className="grid grid-cols-4 sm:grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-3 md:gap-4">
           {FAQS.map((faq, index) => (
             <div
               key={faq.question}
-              className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden"
+              className={`rounded-lg border bg-neutral-900 shadow-sm overflow-hidden ${
+                openIndex === index ? "border-accent/50 sm:border-neutral-700" : "border-neutral-700"
+              }`}
             >
               <button
                 type="button"
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left hover:bg-gray-50 transition"
+                className="flex w-full flex-col items-center justify-between gap-1 px-1.5 py-2.5 text-center hover:bg-neutral-800 transition sm:flex-row sm:gap-3 sm:px-4 sm:py-4 sm:text-left"
               >
-                <span className="text-sm font-medium text-black leading-snug">
-                  {faq.question}
+                <span className="text-[9px] sm:text-sm font-medium text-white leading-tight line-clamp-3 sm:line-clamp-none">
+                  <span className="sm:hidden">{faq.questionShort}</span>
+                  <span className="hidden sm:inline">{faq.question}</span>
                 </span>
-                <span className="text-gray-400 text-xl leading-none shrink-0">
+                <span className="text-neutral-400 text-sm sm:text-xl leading-none shrink-0">
                   {openIndex === index ? "−" : "+"}
                 </span>
               </button>
               {openIndex === index && (
-                <p className="px-4 pb-4 text-xs text-gray-500 leading-relaxed border-t border-gray-100 pt-3">
+                <p className="hidden sm:block px-4 pb-4 text-xs text-neutral-400 leading-relaxed border-t border-neutral-800 pt-3">
                   {faq.answer}
                 </p>
               )}
             </div>
           ))}
         </div>
+
+        {openIndex !== null && (
+          <p className="sm:hidden mt-2.5 px-1 text-[10px] text-neutral-400 leading-snug border-t border-neutral-800 pt-2.5">
+            {FAQS[openIndex].answer}
+          </p>
+        )}
       </div>
     </section>
   );

@@ -53,7 +53,7 @@ function HeroFeatures() {
   return (
     <section className="bg-black px-3 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-6">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-row divide-x divide-gray-200">
+        <div className="bg-neutral-900 rounded-xl shadow-lg overflow-hidden flex flex-row divide-x divide-neutral-700 border border-neutral-700">
           {features.map((item) => (
             <div
               key={item.title}
@@ -63,11 +63,11 @@ function HeroFeatures() {
                 {item.icon}
               </div>
               <div className="min-w-0 w-full">
-                <h3 className="font-bold text-black text-[10px] md:text-base leading-tight">
+                <h3 className="font-bold text-white text-[10px] md:text-base leading-tight">
                   <span className="md:hidden">{item.titleShort}</span>
                   <span className="hidden md:inline">{item.title}</span>
                 </h3>
-                <p className="text-[9px] md:text-sm text-gray-600 mt-0.5 leading-snug line-clamp-2">
+                <p className="text-[9px] md:text-sm text-neutral-400 mt-0.5 leading-snug line-clamp-2">
                   <span className="md:hidden">{item.descriptionShort}</span>
                   <span className="hidden md:inline">{item.description}</span>
                 </p>

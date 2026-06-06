@@ -1,17 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link, NavLink } from "react-router-dom";
+import { getCategories } from "../../api/api";
 import { useAuth } from "../../context/AuthContext";
-import AuthModal from "../auth/AuthModal";
+import { useCart } from "../../context/CartContext";
 import Header from "./Header";
+import ProductMegaMenu from "./ProductMegaMenu";
 
 const NAV_LINKS = [
   { to: "/", label: "Home", end: true },
   { to: "/about", label: "About" },
   { to: "/contact", label: "Contact" },
   { to: "/blog", label: "Blog" },
-  { to: "/product", label: "Product" },
 ];
+
+const PRODUCT_PATH = "/product";
+const PROMO_TAGS = ["most purchase"];
 
 const bottomNavClass = ({ isActive }) =>
   `inline-flex items-center h-12 px-5 xl:px-6 text-xs font-semibold tracking-[0.15em] uppercase transition border-b-[3px] whitespace-nowrap ${
@@ -26,11 +30,31 @@ const mobileNavClass = ({ isActive }) =>
   }`;
 
 function Navbar() {
-  const { user, logout } = useAuth();
-  const [authModal, setAuthModal] = useState(null);
+  const { user, logout, openAuthModal } = useAuth();
+  const { cartCount } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuTop, setMenuTop] = useState(0);
+  const [productMenuOpen, setProductMenuOpen] = useState(false);
+  const [productExpanded, setProductExpanded] = useState(false);
+  const [categories, setCategories] = useState([]);
   const headerBarRef = useRef(null);
+
+  const menuCategories = categories.filter(
+    (item) => !PROMO_TAGS.includes(item.categoryName?.trim().toLowerCase())
+  );
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data } = await getCategories();
+        setCategories(data.data || []);
+      } catch {
+        setCategories([]);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const updateMenuTop = () => {
     if (headerBarRef.current) {
@@ -53,11 +77,22 @@ function Navbar() {
     return () => window.removeEventListener("resize", updateMenuTop);
   }, [menuOpen]);
 
-  const closeMenu = () => setMenuOpen(false);
+  const closeMenu = () => {
+    setMenuOpen(false);
+    setProductExpanded(false);
+  };
+
+  const closeProductMenu = () => setProductMenuOpen(false);
+
+  const buildProductLink = (categoryName, subcategory) => {
+    const params = new URLSearchParams({ categoryName });
+    if (subcategory) params.set("subcategory", subcategory);
+    return `${PRODUCT_PATH}?${params.toString()}`;
+  };
 
   const handleLoginClick = () => {
     if (user) return;
-    setAuthModal("login");
+    openAuthModal("login");
   };
 
   const mobileMenu =
@@ -88,6 +123,63 @@ function Navbar() {
                 </NavLink>
               </li>
             ))}
+
+            <li>
+              <button
+                type="button"
+                onClick={() => setProductExpanded((open) => !open)}
+                className="flex w-full items-center justify-between py-2.5 font-medium uppercase tracking-wide text-neutral-300 hover:text-accent transition"
+              >
+                Product
+                <span
+                  className={`text-accent transition-transform ${productExpanded ? "rotate-180" : ""}`}
+                  aria-hidden="true"
+                >
+                  ▾
+                </span>
+              </button>
+
+              {productExpanded && menuCategories.length > 0 && (
+                <ul className="mt-1 mb-2 pl-3 border-l border-neutral-800 space-y-4">
+                  {menuCategories.map((category) => (
+                    <li key={category._id}>
+                      <Link
+                        to={buildProductLink(category.categoryName)}
+                        onClick={closeMenu}
+                        className="block text-sm font-semibold text-accent mb-2"
+                      >
+                        {category.categoryName}
+                      </Link>
+                      {category.subcategories?.length > 0 && (
+                        <ul className="space-y-1.5 pl-2">
+                          {category.subcategories.map((sub) => (
+                            <li key={sub}>
+                              <Link
+                                to={buildProductLink(category.categoryName, sub)}
+                                onClick={closeMenu}
+                                className="block text-sm text-neutral-400 hover:text-accent transition"
+                              >
+                                {sub}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {productExpanded && menuCategories.length === 0 && (
+                <Link
+                  to={PRODUCT_PATH}
+                  onClick={closeMenu}
+                  className="block pl-3 py-1 text-sm text-neutral-400 hover:text-accent"
+                >
+                  View all products
+                </Link>
+              )}
+            </li>
           </ul>
 
           <div className="space-y-3">
@@ -102,17 +194,25 @@ function Navbar() {
             </a>
 
             <Link
-              to="/contact"
-              onClick={closeMenu}
+              to="/cart"
+              onClick={(e) => {
+                if (!user) {
+                  e.preventDefault();
+                  openAuthModal("login");
+                }
+                closeMenu();
+              }}
               className="flex items-center gap-3 w-full rounded-lg border border-neutral-700 text-white px-4 py-2.5 text-sm font-semibold hover:border-accent hover:text-accent transition"
             >
               <span className="relative inline-flex">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
                 </svg>
-                <span className="absolute -top-1.5 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[9px] font-bold text-white">
-                  0
-                </span>
+                {user && (
+                  <span className="absolute -top-1.5 -right-2 flex h-4 min-w-[16px] px-0.5 items-center justify-center rounded-full bg-accent text-[9px] font-bold text-white">
+                    {cartCount > 99 ? "99+" : cartCount}
+                  </span>
+                )}
               </span>
               My Cart
             </Link>
@@ -135,7 +235,7 @@ function Navbar() {
               <button
                 type="button"
                 onClick={() => {
-                  setAuthModal("login");
+                  openAuthModal("login");
                   closeMenu();
                 }}
                 className="flex items-center justify-center gap-2 w-full rounded-lg border border-neutral-700 text-white px-4 py-2.5 text-sm font-semibold hover:border-accent hover:text-accent transition"
@@ -171,7 +271,10 @@ function Navbar() {
         />
       </div>
 
-      <nav className="hidden md:block bg-[#111111] border-t border-neutral-800/60">
+      <nav
+        className="hidden md:block bg-[#111111] border-t border-neutral-800/60 relative"
+        onMouseLeave={closeProductMenu}
+      >
         <div className="max-w-[1600px] mx-auto px-6 lg:px-10 flex items-center justify-between">
           <ul className="flex items-center">
             {NAV_LINKS.map((link, index) => (
@@ -184,6 +287,23 @@ function Navbar() {
                 </NavLink>
               </li>
             ))}
+
+            <li
+              className="flex items-center"
+              onMouseEnter={() => setProductMenuOpen(true)}
+            >
+              <span className="w-px h-4 bg-neutral-700/80 shrink-0" aria-hidden="true" />
+              <NavLink
+                to={PRODUCT_PATH}
+                className={({ isActive }) =>
+                  bottomNavClass({
+                    isActive: isActive || productMenuOpen,
+                  })
+                }
+              >
+                Product
+              </NavLink>
+            </li>
           </ul>
 
           <Link
@@ -193,17 +313,18 @@ function Navbar() {
             Bulk Enquiry
           </Link>
         </div>
+
+        {productMenuOpen && menuCategories.length > 0 && (
+          <div onMouseEnter={() => setProductMenuOpen(true)}>
+            <ProductMegaMenu
+              categories={categories}
+              onNavigate={closeProductMenu}
+            />
+          </div>
+        )}
       </nav>
 
       {mobileMenu}
-
-      {authModal && (
-        <AuthModal
-          mode={authModal}
-          onClose={() => setAuthModal(null)}
-          onSwitchMode={setAuthModal}
-        />
-      )}
     </>
   );
 }

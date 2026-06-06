@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { getMe, loginUser, signupUser } from "../api/api";
 
 const AuthContext = createContext(null);
@@ -9,6 +9,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [authModal, setAuthModal] = useState(null);
 
   const persistAuth = (authUser, authToken) => {
     setUser(authUser);
@@ -24,6 +25,14 @@ export function AuthProvider({ children }) {
     setToken(null);
     localStorage.removeItem(STORAGE_KEY);
   };
+
+  const openAuthModal = useCallback((mode = "login") => {
+    setAuthModal(mode);
+  }, []);
+
+  const closeAuthModal = useCallback(() => {
+    setAuthModal(null);
+  }, []);
 
   useEffect(() => {
     const initAuth = async () => {
@@ -57,12 +66,14 @@ export function AuthProvider({ children }) {
   const signup = async (data) => {
     const res = await signupUser(data);
     persistAuth(res.data.data.user, res.data.data.token);
+    closeAuthModal();
     return res.data;
   };
 
   const login = async (data) => {
     const res = await loginUser(data);
     persistAuth(res.data.data.user, res.data.data.token);
+    closeAuthModal();
     return res.data;
   };
 
@@ -71,7 +82,20 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, signup, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        loading,
+        signup,
+        login,
+        logout,
+        authModal,
+        openAuthModal,
+        closeAuthModal,
+        setAuthModal,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

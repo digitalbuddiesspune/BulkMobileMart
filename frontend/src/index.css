@@ -6,6 +6,7 @@
   --color-surface: #0a0a0a;
   --color-border: #262626;
   --color-accent: #f97316;
+  --color-light-bg: #f8f8f8;
   --color-muted: #a3a3a3;
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 }
@@ -37,4 +38,45 @@ img {
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+.page-hero-section {
+  padding: 1.5rem 0.75rem 2.5rem;
+  border-bottom: 1px solid #262626;
+}
+
+@media (min-width: 640px) {
+  .page-hero-section {
+    padding: 2.5rem 1rem 4rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .page-hero-section {
+    padding: 3rem 1rem 5rem;
+  }
+}
+
+.page-title {
+  font-family: var(--font-sans);
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 640px) {
+  .page-title {
+    font-size: 2.25rem;
+    margin-bottom: 1.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .page-title {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+  }
 }

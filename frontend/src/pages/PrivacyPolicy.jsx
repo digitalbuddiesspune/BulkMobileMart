@@ -1,9 +1,9 @@
 function PrivacyPolicy() {
   return (
     <div className="bg-black text-white">
-      <section className="py-10 sm:py-16 md:py-20 px-3 sm:px-4 border-b border-neutral-800">
+      <section className="page-hero-section px-3 sm:px-4">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">Privacy Policy</h1>
+          <h1 className="page-title">Privacy Policy</h1>
           <p className="text-neutral-400">Last updated: June 5, 2026</p>
         </div>
       </section>
