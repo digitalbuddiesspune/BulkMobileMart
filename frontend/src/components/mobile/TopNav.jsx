@@ -75,7 +75,7 @@ function TopNav() {
   };
 
   return (
-    <header className="sticky top-0 z-50 hidden border-b border-border-light bg-white shadow-sm lg:block">
+    <header className="fixed top-0 left-0 right-0 z-50 hidden border-b border-border-light bg-white shadow-sm lg:block">
       <div className="mx-auto flex max-w-[1600px] items-center gap-4 px-5 py-3 xl:gap-6 xl:px-8">
         {/* Left: menu + logo */}
         <div className="flex shrink-0 items-center gap-3">

@@ -1,12 +1,15 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI =
-  process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/bulkmobilemart";
-
 const connectDB = async () => {
+  const uri =
+    process.env.MONGODB_URI ||
+    "mongodb://127.0.0.1:27017/bulkmobilemartdb";
+
   try {
-    const conn = await mongoose.connect(MONGODB_URI);
-    console.log(`MongoDB connected: ${conn.connection.host}`);
+    const conn = await mongoose.connect(uri);
+    console.log(
+      `MongoDB connected: ${conn.connection.host} / ${conn.connection.name}`
+    );
     return conn;
   } catch (error) {
     console.error("MongoDB connection error:", error.message);
