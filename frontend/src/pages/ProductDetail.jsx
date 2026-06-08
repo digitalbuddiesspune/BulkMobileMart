@@ -131,7 +131,7 @@ function MobileStoreHeader({ cartCount }) {
   );
 }
 
-function MobileDetailToolbar({ title, backTo }) {
+function MobileDetailToolbar({ backTo }) {
   const navigate = useNavigate();
 
   return (
@@ -139,7 +139,8 @@ function MobileDetailToolbar({ title, backTo }) {
       <button
         type="button"
         onClick={() => (backTo ? navigate(backTo) : navigate(-1))}
-        className="inline-flex min-w-0 max-w-full items-center gap-0.5 text-text-primary"
+        className="inline-flex h-9 w-9 items-center justify-center text-text-primary"
+        aria-label="Go back"
       >
         <svg
           className="h-[18px] w-[18px] shrink-0"
@@ -151,19 +152,18 @@ function MobileDetailToolbar({ title, backTo }) {
         >
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 18l-6-6 6-6" />
         </svg>
-        <span className="truncate text-sm font-bold leading-none sm:text-[15px]">{title}</span>
       </button>
     </div>
   );
 }
 
-function MobileDetailHeader({ title, category, cartCount }) {
+function MobileDetailHeader({ category, cartCount }) {
   const categoryLink = `/product?categoryName=${encodeURIComponent(category)}`;
 
   return (
     <header className="sticky top-0 z-40 lg:hidden">
       <MobileStoreHeader cartCount={cartCount} />
-      <MobileDetailToolbar title={title} backTo={categoryLink} />
+      <MobileDetailToolbar backTo={categoryLink} />
     </header>
   );
 }
@@ -191,31 +191,33 @@ function ThumbnailCarousel({ images, activeImage, onSelect }) {
 
 function QuantitySelector({ quantity, min, max, onDecrease, onIncrease, disabled }) {
   return (
-    <div className="inline-flex w-full max-w-full flex-nowrap items-center overflow-hidden rounded-md border border-border-light sm:w-auto">
-      <span className="shrink-0 whitespace-nowrap border-r border-border-light px-2 py-1.5 text-xs font-semibold text-text-primary sm:px-2.5 sm:text-sm">
+    <div className="flex w-full items-center justify-between gap-2 py-1 sm:gap-3">
+      <span className="shrink-0 text-xs font-semibold text-text-primary sm:text-sm">
         Quantity (Pieces)
       </span>
-      <button
-        type="button"
-        onClick={onDecrease}
-        disabled={disabled || quantity <= min}
-        aria-label="Decrease quantity"
-        className="flex h-8 w-8 shrink-0 items-center justify-center border-r border-border-light text-base text-text-secondary transition hover:bg-mobile-surface hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        −
-      </button>
-      <span className="flex h-8 min-w-[2.25rem] shrink-0 items-center justify-center border-r border-border-light px-1.5 text-sm font-bold text-text-primary">
-        {quantity}
-      </span>
-      <button
-        type="button"
-        onClick={onIncrease}
-        disabled={disabled || quantity >= max}
-        aria-label="Increase quantity"
-        className="flex h-8 w-8 shrink-0 items-center justify-center text-base text-text-secondary transition hover:bg-mobile-surface hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        +
-      </button>
+      <div className="inline-flex shrink-0 items-center overflow-hidden rounded-md border border-border-light">
+        <button
+          type="button"
+          onClick={onDecrease}
+          disabled={disabled || quantity <= min}
+          aria-label="Decrease quantity"
+          className="flex h-8 w-8 items-center justify-center border-r border-border-light bg-white text-base text-text-secondary transition hover:bg-mobile-surface hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          −
+        </button>
+        <span className="flex h-8 min-w-[2.25rem] items-center justify-center border-r border-border-light bg-white px-1.5 text-sm font-bold text-text-primary">
+          {quantity}
+        </span>
+        <button
+          type="button"
+          onClick={onIncrease}
+          disabled={disabled || quantity >= max}
+          aria-label="Increase quantity"
+          className="flex h-8 w-8 items-center justify-center bg-white text-base text-text-secondary transition hover:bg-mobile-surface hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          +
+        </button>
+      </div>
     </div>
   );
 }
@@ -317,7 +319,7 @@ function ProductDetail() {
   if (loading) {
     return (
       <div className="min-h-screen bg-white pb-28 lg:pb-10">
-        <MobileDetailHeader title="Product" category="Products" cartCount={cartCount} />
+        <MobileDetailHeader category="Products" cartCount={cartCount} />
         <div className="mx-auto w-full max-w-7xl px-3 pb-8 pt-4 sm:px-4 md:px-5 lg:px-6 xl:px-8">
           <div className="animate-pulse">
             <div className="mb-6 hidden h-4 w-64 rounded bg-mobile-surface lg:block" />
@@ -338,7 +340,7 @@ function ProductDetail() {
   if (error || !product) {
     return (
       <div className="min-h-screen bg-white pb-28 lg:pb-10">
-        <MobileDetailHeader title="Product" category="Products" cartCount={cartCount} />
+        <MobileDetailHeader category="Products" cartCount={cartCount} />
         <div className="mx-auto w-full max-w-7xl px-3 py-16 text-center sm:px-4 md:px-5 lg:px-6 xl:px-8">
           <p className="mb-6 text-text-secondary">{error || "Product not found."}</p>
           <Link to="/product" className="text-sm font-medium text-primary hover:underline">
@@ -356,7 +358,7 @@ function ProductDetail() {
 
   return (
     <div className="min-h-screen bg-white pb-24 text-text-primary lg:pb-10">
-      <MobileDetailHeader title={category} category={category} cartCount={cartCount} />
+      <MobileDetailHeader category={category} cartCount={cartCount} />
 
       <div className="mx-auto w-full max-w-7xl px-3 pt-3 sm:px-4 sm:pt-4 md:px-5 lg:px-6 lg:pt-4 xl:px-8">
         <nav className="mb-4 hidden flex-wrap items-center gap-1.5 text-xs text-text-secondary sm:mb-5 sm:text-sm lg:flex">
