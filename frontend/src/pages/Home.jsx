@@ -1,19 +1,21 @@
-import Hero from "../components/home/Hero";
-import HeroFeatures from "../components/home/HeroFeatures";
-import ShopByCategory from "../components/home/ShopByCategory";
-import ShopByBrand from "../components/home/ShopByBrand";
-import MostLikedProducts from "../components/home/MostLikedProducts";
-import PreFooterSection from "../components/home/PreFooterSection";
+import MobileHeader from "../components/mobile/MobileHeader";
+import HeroBanner from "../components/mobile/HeroBanner";
+import CategoryNav from "../components/mobile/CategoryNav";
+import ValuePropositions from "../components/mobile/ValuePropositions";
+import PromoBanner from "../components/mobile/PromoBanner";
+import TopBrands from "../components/mobile/TopBrands";
+import BestDeals from "../components/mobile/BestDeals";
 
 function Home() {
   return (
-    <div className="bg-black">
-      <Hero />
-      <HeroFeatures />
-      <ShopByCategory />
-      <ShopByBrand />
-      <MostLikedProducts />
-      <PreFooterSection />
+    <div className="bg-mobile-bg">
+      <MobileHeader />
+      <HeroBanner />
+      <CategoryNav />
+      <ValuePropositions />
+      <PromoBanner />
+      <TopBrands />
+      <BestDeals />
     </div>
   );
 }
