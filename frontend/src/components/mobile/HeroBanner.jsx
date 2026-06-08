@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { getHeroBanners } from "../../api/api";
 
 const AUTO_PLAY_MS = 5000;
@@ -56,71 +55,44 @@ function HeroBanner() {
     return () => clearInterval(timer);
   }, [slides.length]);
 
+  const bannerShellClass =
+    "relative w-full overflow-hidden bg-[#1a1a1a] aspect-[1920/340]";
+
   if (loading) {
     return (
-      <section className="relative left-1/2 hidden w-screen max-w-[100vw] -translate-x-1/2 bg-mobile-bg md:block">
-        <div className="min-h-[300px] w-full animate-pulse overflow-hidden bg-[#1a1a1a] md:min-h-[320px] lg:min-h-[340px]" />
+      <section className="relative left-1/2 w-screen max-w-[100vw] -translate-x-1/2">
+        <div className={`${bannerShellClass} animate-pulse`} />
       </section>
     );
   }
 
   return (
     <section
-      className="relative left-1/2 hidden w-screen max-w-[100vw] -translate-x-1/2 bg-mobile-bg md:block"
+      className="relative left-1/2 w-screen max-w-[100vw] -translate-x-1/2"
       aria-label="Promotional banners"
     >
-      <div className="relative w-full overflow-hidden bg-[#1a1a1a]">
-        <div className="relative grid min-h-[300px] grid-cols-1 md:min-h-[320px] md:grid-cols-2 lg:min-h-[340px]">
-          <div className="relative z-10 flex flex-col justify-center px-8 py-10 lg:px-12 lg:py-12">
-            <p className="text-sm font-medium text-white/90">India&apos;s Trusted</p>
-
-            <h2 className="mt-2 text-[1.75rem] font-bold leading-[1.2] tracking-tight lg:text-[2.125rem]">
-              <span className="text-white">Mobile Accessories</span>
-              <br />
-              <span className="text-primary">Wholesale Platform</span>
-            </h2>
-
-            <p className="mt-4 text-base font-medium text-white lg:text-lg">
-              Smart Choice, Best Price
-            </p>
-
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link
-                to="/product"
-                className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2.5 text-sm font-bold text-white transition hover:bg-primary/90"
-              >
-                Shop Now
-              </Link>
-              <Link
-                to="/product"
-                className="inline-flex items-center justify-center rounded-lg border border-white/80 px-6 py-2.5 text-sm font-bold text-white transition hover:bg-white/10"
-              >
-                Bulk Order
-              </Link>
-            </div>
+      <div className={bannerShellClass}>
+        {slides.map((slide, index) => (
+          <div
+            key={slide.id}
+            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+              index === current ? "opacity-100" : "pointer-events-none opacity-0"
+            }`}
+            aria-hidden={index !== current}
+          >
+            <img
+              src={slide.src}
+              alt={slide.alt}
+              className="h-full w-full object-cover object-center"
+              loading={index === 0 ? "eager" : "lazy"}
+              draggable={false}
+            />
           </div>
-
-          <div className="relative hidden min-h-[240px] items-center justify-end overflow-hidden pr-2 md:flex md:pr-4 lg:pr-6">
-            {slides.map((slide, index) => (
-              <img
-                key={slide.id}
-                src={slide.src}
-                alt={slide.alt}
-                className={`absolute right-0 top-1/2 max-h-[300px] w-auto max-w-[95%] -translate-y-1/2 object-contain object-right transition-opacity duration-700 ease-in-out lg:max-h-[320px] ${
-                  index === current
-                    ? "opacity-100"
-                    : "pointer-events-none opacity-0"
-                }`}
-                loading={index === 0 ? "eager" : "lazy"}
-                draggable={false}
-              />
-            ))}
-          </div>
-        </div>
+        ))}
 
         {slides.length > 1 && (
           <>
-            <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 gap-2">
+            <div className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 gap-2">
               {slides.map((slide, index) => (
                 <button
                   key={slide.id}
@@ -128,10 +100,10 @@ function HeroBanner() {
                   aria-label={`Go to slide ${index + 1}`}
                   aria-current={index === current ? "true" : undefined}
                   onClick={() => goTo(index)}
-                  className={`h-2.5 rounded-full transition-all ${
+                  className={`h-2 rounded-full transition-all ${
                     index === current
-                      ? "w-7 bg-primary"
-                      : "w-2.5 bg-white/50 hover:bg-white/80"
+                      ? "w-6 bg-primary"
+                      : "w-2 bg-white/60 hover:bg-white/90"
                   }`}
                 />
               ))}
@@ -141,7 +113,7 @@ function HeroBanner() {
               type="button"
               onClick={() => goTo(current - 1)}
               aria-label="Previous slide"
-              className="absolute left-3 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/35 text-xl text-white transition hover:bg-black/55 lg:left-4"
+              className="absolute left-2 top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black/35 text-lg text-white transition hover:bg-black/55 sm:left-3"
             >
               ‹
             </button>
@@ -149,13 +121,12 @@ function HeroBanner() {
               type="button"
               onClick={() => goTo(current + 1)}
               aria-label="Next slide"
-              className="absolute right-3 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/35 text-xl text-white transition hover:bg-black/55 lg:right-4"
+              className="absolute right-2 top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black/35 text-lg text-white transition hover:bg-black/55 sm:right-3"
             >
               ›
             </button>
           </>
         )}
-
       </div>
     </section>
   );
