@@ -94,7 +94,7 @@ const TABS = [
 
 function MobileStoreHeader({ cartCount }) {
   return (
-    <div className="border-b border-border-light bg-white px-3 py-2.5 sm:px-4">
+    <div className="border-b border-border-light bg-white px-4 py-2.5">
       <div className="relative flex h-10 items-center justify-between">
         <Link
           to="/product"
@@ -131,40 +131,14 @@ function MobileStoreHeader({ cartCount }) {
   );
 }
 
-function MobileDetailToolbar({ backTo }) {
-  const navigate = useNavigate();
-
+function MobileTopNav({ cartCount }) {
   return (
-    <div className="flex items-center border-b border-border-light bg-white px-3 py-2.5 sm:px-4">
-      <button
-        type="button"
-        onClick={() => (backTo ? navigate(backTo) : navigate(-1))}
-        className="inline-flex h-9 w-9 items-center justify-center text-text-primary"
-        aria-label="Go back"
-      >
-        <svg
-          className="h-[18px] w-[18px] shrink-0"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2.5}
-          aria-hidden="true"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 18l-6-6 6-6" />
-        </svg>
-      </button>
-    </div>
-  );
-}
-
-function MobileDetailHeader({ category, cartCount }) {
-  const categoryLink = `/product?categoryName=${encodeURIComponent(category)}`;
-
-  return (
-    <header className="sticky top-0 z-40 lg:hidden">
-      <MobileStoreHeader cartCount={cartCount} />
-      <MobileDetailToolbar backTo={categoryLink} />
-    </header>
+    <>
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm lg:hidden">
+        <MobileStoreHeader cartCount={cartCount} />
+      </header>
+      <div className="h-[61px] shrink-0 lg:hidden" aria-hidden="true" />
+    </>
   );
 }
 
@@ -319,7 +293,7 @@ function ProductDetail() {
   if (loading) {
     return (
       <div className="min-h-screen bg-white pb-28 lg:pb-10">
-        <MobileDetailHeader category="Products" cartCount={cartCount} />
+        <MobileTopNav cartCount={cartCount} />
         <div className="mx-auto w-full max-w-7xl px-3 pb-8 pt-4 sm:px-4 md:px-5 lg:px-6 xl:px-8">
           <div className="animate-pulse">
             <div className="mb-6 hidden h-4 w-64 rounded bg-mobile-surface lg:block" />
@@ -340,7 +314,7 @@ function ProductDetail() {
   if (error || !product) {
     return (
       <div className="min-h-screen bg-white pb-28 lg:pb-10">
-        <MobileDetailHeader category="Products" cartCount={cartCount} />
+        <MobileTopNav cartCount={cartCount} />
         <div className="mx-auto w-full max-w-7xl px-3 py-16 text-center sm:px-4 md:px-5 lg:px-6 xl:px-8">
           <p className="mb-6 text-text-secondary">{error || "Product not found."}</p>
           <Link to="/product" className="text-sm font-medium text-primary hover:underline">
@@ -358,8 +332,7 @@ function ProductDetail() {
 
   return (
     <div className="min-h-screen bg-white pb-24 text-text-primary lg:pb-10">
-      <MobileDetailHeader category={category} cartCount={cartCount} />
-
+      <MobileTopNav cartCount={cartCount} />
       <div className="mx-auto w-full max-w-7xl px-3 pt-3 sm:px-4 sm:pt-4 md:px-5 lg:px-6 lg:pt-4 xl:px-8">
         <nav className="mb-4 hidden flex-wrap items-center gap-1.5 text-xs text-text-secondary sm:mb-5 sm:text-sm lg:flex">
           <Link to="/" className="transition hover:text-primary">
