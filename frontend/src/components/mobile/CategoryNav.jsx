@@ -113,6 +113,30 @@ function CategoryIcon({ type, className = "h-8 w-8" }) {
   );
 }
 
+function isUsableCategoryImage(url) {
+  if (!url?.trim()) return false;
+  if (url.includes("res.cloudinary.com/demo")) return false;
+  return true;
+}
+
+function CategoryImage({ src, name, icon, className = "h-8 w-8" }) {
+  const [failed, setFailed] = useState(false);
+
+  if (!isUsableCategoryImage(src) || failed) {
+    return <CategoryIcon type={icon} className={className} />;
+  }
+
+  return (
+    <img
+      src={src}
+      alt={name}
+      className="h-full w-full object-contain"
+      loading="lazy"
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
 function CategoryNav() {
   const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
 
@@ -128,7 +152,9 @@ function CategoryNav() {
           setCategories(
             apiCategories.map((cat, index) => ({
               name: cat.categoryName,
-              image: cat.categoryImage,
+              image: isUsableCategoryImage(cat.categoryImage)
+                ? cat.categoryImage
+                : undefined,
               icon: ICON_TYPES[index % ICON_TYPES.length],
             }))
           );
@@ -152,16 +178,11 @@ function CategoryNav() {
             className="flex w-[72px] shrink-0 flex-col items-center gap-2.5 sm:w-[80px]"
           >
             <div className="flex h-[64px] w-[64px] items-center justify-center rounded-full border border-border-light bg-white p-2 shadow-sm sm:h-[68px] sm:w-[68px]">
-              {category.image ? (
-                <img
-                  src={category.image}
-                  alt={category.name}
-                  className="h-full w-full object-contain"
-                  loading="lazy"
-                />
-              ) : (
-                <CategoryIcon type={category.icon} />
-              )}
+              <CategoryImage
+                src={category.image}
+                name={category.name}
+                icon={category.icon}
+              />
             </div>
             <span className="w-full text-center text-[11px] font-medium leading-tight text-text-primary sm:text-xs">
               {category.name}
@@ -180,16 +201,12 @@ function CategoryNav() {
             className="group flex flex-col items-center gap-3 text-center"
           >
             <div className="flex h-[76px] w-[76px] items-center justify-center rounded-full border border-border-light bg-white p-2.5 shadow-sm transition group-hover:border-primary/40 group-hover:shadow-md xl:h-[84px] xl:w-[84px]">
-              {category.image ? (
-                <img
-                  src={category.image}
-                  alt={category.name}
-                  className="h-full w-full object-contain"
-                  loading="lazy"
-                />
-              ) : (
-                <CategoryIcon type={category.icon} className="h-9 w-9 xl:h-10 xl:w-10" />
-              )}
+              <CategoryImage
+                src={category.image}
+                name={category.name}
+                icon={category.icon}
+                className="h-9 w-9 xl:h-10 xl:w-10"
+              />
             </div>
             <span className="min-h-[2.5rem] max-w-[100px] text-sm font-medium leading-snug text-text-primary xl:max-w-[110px] xl:text-[15px]">
               {category.name}

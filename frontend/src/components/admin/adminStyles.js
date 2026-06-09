@@ -15,6 +15,9 @@ export const btnDanger =
 export const btnSecondary =
   "rounded-lg border border-border-light px-4 py-2 text-sm font-medium text-text-primary transition hover:border-primary hover:text-primary";
 
+export const tableClass =
+  "overflow-x-auto rounded-xl border border-border-light bg-white";
+
 export const parseList = (value) =>
   value
     .split(",")

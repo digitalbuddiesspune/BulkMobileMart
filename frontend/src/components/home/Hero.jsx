@@ -59,10 +59,7 @@ function Hero() {
   if (slides.length === 0) {
     return (
       <section className="relative w-full bg-black py-20 text-center text-neutral-400">
-        No hero banners yet. Add them from{" "}
-        <a href="/admin" className="text-accent hover:underline">
-          /admin
-        </a>
+        No hero banners yet.
       </section>
     );
   }

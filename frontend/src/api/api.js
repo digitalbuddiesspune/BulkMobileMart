@@ -22,9 +22,17 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-export const getHeroBanners = () => api.get("/api/herobanners");
+export const getHeroBanners = (device = "desktop") =>
+  api.get("/api/herobanners", { params: { device } });
 export const getAllHeroBanners = () => api.get("/api/herobanners/all");
-export const addHeroBanner = (data) => api.post("/api/herobanners", data);
+export const addHeroBanner = (data) =>
+  api.post("/api/herobanners", data, {
+    params: { device: data.bannerFor || data.device },
+  });
+export const updateHeroBanner = (id, data) =>
+  api.put(`/api/herobanners/${id}`, data, {
+    params: { device: data.bannerFor || data.device },
+  });
 export const deleteHeroBanner = (id) => api.delete(`/api/herobanners/${id}`);
 
 export const getCategories = () => api.get("/api/categories");
@@ -52,5 +60,7 @@ export const signupUser = (data) => api.post("/api/users/signup", data);
 export const loginUser = (data) => api.post("/api/users/login", data);
 export const getMe = () => api.get("/api/users/me");
 export const getUsers = () => api.get("/api/users");
+export const updateUser = (id, data) => api.put(`/api/users/${id}`, data);
+export const deleteUser = (id) => api.delete(`/api/users/${id}`);
 
 export default api;

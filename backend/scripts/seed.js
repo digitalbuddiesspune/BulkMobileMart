@@ -8,52 +8,52 @@ import Product from "../models/Product.js";
 const CATEGORIES = [
   {
     categoryName: "Chargers",
-    categoryImage: "https://res.cloudinary.com/demo/image/upload/charger.png",
+    categoryImage: "",
     subcategories: ["Fast Charger", "Car Charger", "Wireless Charger"],
   },
   {
     categoryName: "Earphones",
-    categoryImage: "https://res.cloudinary.com/demo/image/upload/earphone.png",
+    categoryImage: "",
     subcategories: ["Wired", "Wireless", "Earbuds"],
   },
   {
     categoryName: "Cables",
-    categoryImage: "https://res.cloudinary.com/demo/image/upload/cable.png",
+    categoryImage: "",
     subcategories: ["Type-C", "Lightning", "Micro USB"],
   },
   {
     categoryName: "Neckbands",
-    categoryImage: "https://res.cloudinary.com/demo/image/upload/neckband.png",
+    categoryImage: "",
     subcategories: ["Bluetooth", "Sports"],
   },
   {
     categoryName: "Power Banks",
-    categoryImage: "https://res.cloudinary.com/demo/image/upload/powerbank.png",
+    categoryImage: "",
     subcategories: ["10000mAh", "20000mAh"],
   },
   {
     categoryName: "Smart Watches",
-    categoryImage: "https://res.cloudinary.com/demo/image/upload/watch.png",
+    categoryImage: "",
     subcategories: ["Fitness", "Kids"],
   },
   {
     categoryName: "Bluetooth Speakers",
-    categoryImage: "https://res.cloudinary.com/demo/image/upload/speaker.png",
+    categoryImage: "",
     subcategories: ["Portable", "Party"],
   },
   {
     categoryName: "Mobile Covers",
-    categoryImage: "https://res.cloudinary.com/demo/image/upload/cover.png",
+    categoryImage: "",
     subcategories: ["Silicone", "Hard Case"],
   },
   {
     categoryName: "Tempered Glass",
-    categoryImage: "https://res.cloudinary.com/demo/image/upload/glass.png",
+    categoryImage: "",
     subcategories: ["9H", "Privacy"],
   },
   {
     categoryName: "Adapters",
-    categoryImage: "https://res.cloudinary.com/demo/image/upload/adapter.png",
+    categoryImage: "",
     subcategories: ["OTG", "Audio Jack"],
   },
 ];

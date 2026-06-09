@@ -10,6 +10,8 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "seed": "node scripts/seed.js",
+    "create-admin": "node scripts/createAdmin.js",
+    "fix-category-images": "node scripts/fixCategoryImages.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

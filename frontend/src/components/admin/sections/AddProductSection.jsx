@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   addProduct,
-  deleteProduct,
   getAllCategories,
-  getAllProducts,
   updateProduct,
 } from "../../../api/api";
 import AdminAlert from "../AdminAlert";
 import {
-  btnDanger,
   btnPrimary,
   btnSecondary,
   cardClass,
@@ -27,45 +25,76 @@ const EMPTY_FORM = {
   discountedPercent: "",
   stock: "",
   ratings: "0",
-  productImages: "",
   description: "",
   features: "",
   warranty: "",
   isActive: true,
 };
 
-function ProductSection() {
-  const [products, setProducts] = useState([]);
+function AddProductSection() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const editProduct = location.state?.editProduct;
+
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [form, setForm] = useState(EMPTY_FORM);
+  const [productImages, setProductImages] = useState([""]);
   const [editingId, setEditingId] = useState(null);
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      setError("");
-      const [productsRes, categoriesRes] = await Promise.all([
-        getAllProducts(),
-        getAllCategories(),
-      ]);
-      setProducts(productsRes.data.data || []);
-      setCategories(categoriesRes.data.data || []);
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to load products");
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    getAllCategories()
+      .then(({ data }) => setCategories(data.data || []))
+      .catch(() => setCategories([]));
+  }, []);
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (editProduct) {
+      setEditingId(editProduct._id);
+      setForm({
+        name: editProduct.name,
+        categories: (editProduct.categories || []).join(", "),
+        subcategory: editProduct.subcategory || "",
+        brandName: editProduct.brandName || "",
+        price: String(editProduct.price ?? ""),
+        discountedPrice: String(editProduct.discountedPrice ?? ""),
+        discountedPercent: String(editProduct.discountedPercent ?? ""),
+        stock: String(editProduct.stock ?? ""),
+        ratings: String(editProduct.ratings ?? 0),
+        description: editProduct.description || "",
+        features: (editProduct.features || []).join(", "),
+        warranty: editProduct.warranty || "",
+        isActive: editProduct.isActive,
+      });
+      const imgs = editProduct.productImages || [];
+      setProductImages(imgs.length > 0 ? imgs : [""]);
+    }
+  }, [editProduct]);
+
+  const updateImageUrl = (index, value) => {
+    setProductImages((prev) =>
+      prev.map((item, i) => (i === index ? value : item))
+    );
+  };
+
+  const addImageField = () => {
+    setProductImages((prev) => [...prev, ""]);
+  };
+
+  const removeImageField = (index) => {
+    setProductImages((prev) =>
+      prev.length === 1 ? [""] : prev.filter((_, i) => i !== index)
+    );
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const images = productImages.map((s) => s.trim()).filter(Boolean);
+    if (images.length === 0) {
+      setError("At least one image URL is required");
+      return;
+    }
     try {
       setError("");
       setSuccess("");
@@ -79,7 +108,7 @@ function ProductSection() {
         discountedPercent: Number(form.discountedPercent),
         stock: Number(form.stock),
         ratings: Number(form.ratings) || 0,
-        productImages: parseList(form.productImages),
+        productImages: images,
         description: form.description,
         features: parseList(form.features),
         warranty: form.warranty,
@@ -95,76 +124,34 @@ function ProductSection() {
       }
 
       setForm(EMPTY_FORM);
+      setProductImages([""]);
       setEditingId(null);
-      fetchData();
+      navigate("/admin/products/show", { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || "Failed to save product");
     }
   };
 
-  const handleEdit = (product) => {
-    setEditingId(product._id);
-    setForm({
-      name: product.name,
-      categories: (product.categories || []).join(", "),
-      subcategory: product.subcategory || "",
-      brandName: product.brandName || "",
-      price: String(product.price ?? ""),
-      discountedPrice: String(product.discountedPrice ?? ""),
-      discountedPercent: String(product.discountedPercent ?? ""),
-      stock: String(product.stock ?? ""),
-      ratings: String(product.ratings ?? 0),
-      productImages: (product.productImages || []).join(", "),
-      description: product.description || "",
-      features: (product.features || []).join(", "),
-      warranty: product.warranty || "",
-      isActive: product.isActive,
-    });
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const handleDelete = async (id) => {
-    if (!window.confirm("Delete this product?")) return;
-    try {
-      setError("");
-      setSuccess("");
-      await deleteProduct(id);
-      setSuccess("Product deleted");
-      if (editingId === id) {
-        setEditingId(null);
-        setForm(EMPTY_FORM);
-      }
-      fetchData();
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to delete product");
-    }
+  const handleCancel = () => {
+    setForm(EMPTY_FORM);
+    setProductImages([""]);
+    setEditingId(null);
+    navigate("/admin/products/show");
   };
 
   const setField = (name, value) => setForm((p) => ({ ...p, [name]: value }));
 
   return (
     <div>
-      <h2 className="mb-1 text-xl font-bold">Products</h2>
-      <p className="mb-5 text-sm text-text-secondary">
-        Manage product catalog, pricing and stock.
-      </p>
-
       <AdminAlert error={error} success={success} onClear={() => setError("")} />
 
-      <form onSubmit={handleSubmit} className={`${cardClass} mb-6 space-y-4`}>
+      <form onSubmit={handleSubmit} className={`${cardClass} space-y-4`}>
         <div className="flex items-center justify-between gap-3">
           <h3 className="font-semibold">
             {editingId ? "Edit Product" : "Add Product"}
           </h3>
           {editingId && (
-            <button
-              type="button"
-              onClick={() => {
-                setEditingId(null);
-                setForm(EMPTY_FORM);
-              }}
-              className={btnSecondary}
-            >
+            <button type="button" onClick={handleCancel} className={btnSecondary}>
               Cancel
             </button>
           )}
@@ -278,15 +265,38 @@ function ProductSection() {
         </div>
 
         <div>
-          <label className={labelClass}>Image URLs * (comma separated)</label>
-          <input
-            type="text"
-            required
-            placeholder="https://..., https://..."
-            value={form.productImages}
-            onChange={(e) => setField("productImages", e.target.value)}
-            className={inputClass}
-          />
+          <label className={labelClass}>Image URLs *</label>
+          <div className="space-y-2">
+            {productImages.map((url, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <input
+                  type="url"
+                  placeholder={`Image URL ${index + 1}`}
+                  value={url}
+                  onChange={(e) => updateImageUrl(index, e.target.value)}
+                  className={inputClass}
+                  required={index === 0 && productImages.length === 1}
+                />
+                {productImages.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeImageField(index)}
+                    className="shrink-0 rounded-lg border border-border-light px-3 py-2.5 text-sm text-red-600 transition hover:border-red-300 hover:bg-red-50"
+                    aria-label="Remove image URL"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={addImageField}
+            className="mt-2 text-sm font-semibold text-accent hover:underline"
+          >
+            + Add more
+          </button>
         </div>
 
         <div>
@@ -334,65 +344,8 @@ function ProductSection() {
           {editingId ? "Update Product" : "Add Product"}
         </button>
       </form>
-
-      <h3 className="mb-3 font-semibold">All Products ({products.length})</h3>
-      {loading ? (
-        <p className="text-text-secondary">Loading...</p>
-      ) : products.length === 0 ? (
-        <p className="text-text-secondary">No products yet.</p>
-      ) : (
-        <div className="space-y-3">
-          {products.map((product) => (
-            <div
-              key={product._id}
-              className={`${cardClass} flex flex-wrap items-start gap-4`}
-            >
-              <div className="h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-border-light bg-mobile-surface">
-                {product.productImages?.[0] ? (
-                  <img
-                    src={product.productImages[0]}
-                    alt={product.name}
-                    className="h-full w-full object-contain p-1"
-                  />
-                ) : null}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="font-semibold">{product.name}</p>
-                <p className="text-sm text-text-secondary">
-                  {product.brandName} · {product.categories?.join(", ")}
-                </p>
-                <p className="mt-1 text-sm font-bold text-primary">
-                  ₹{product.discountedPrice}{" "}
-                  <span className="text-xs font-normal text-text-muted line-through">
-                    ₹{product.price}
-                  </span>
-                </p>
-                <p className="text-xs text-text-secondary">
-                  Stock: {product.stock} · Rating: {product.ratings}
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleEdit(product)}
-                  className={btnSecondary}
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDelete(product._id)}
-                  className={btnDanger}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
 
-export default ProductSection;
+export default AddProductSection;

@@ -20,6 +20,11 @@ const heroBannerSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    device: {
+      type: String,
+      enum: ["desktop", "mobile"],
+      default: "desktop",
+    },
   },
   { timestamps: true }
 );

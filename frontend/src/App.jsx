@@ -16,7 +16,7 @@ import Cart from "./pages/Cart";
 import Blog from "./pages/Blog";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
-import Admin from "./pages/Admin";
+import Admin from "./pages/admin";
 
 function AuthModalHost() {
   const { authModal, closeAuthModal, setAuthModal } = useAuth();
@@ -39,7 +39,7 @@ function App() {
       <AuthProvider>
         <CartProvider>
         <Routes>
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/*" element={<Admin />} />
           <Route
             path="/"
             element={

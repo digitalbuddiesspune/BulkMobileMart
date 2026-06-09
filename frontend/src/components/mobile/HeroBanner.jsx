@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { getHeroBanners } from "../../api/api";
 
 const AUTO_PLAY_MS = 5000;
+const DESKTOP_BREAKPOINT = 1024;
 
 const DEFAULT_PRODUCT_IMAGE = "/hero-banner.webp";
 
@@ -17,16 +18,44 @@ function HeroBanner() {
   const [slides, setSlides] = useState([]);
   const [current, setCurrent] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [device, setDevice] = useState(() =>
+    typeof window !== "undefined" &&
+    window.matchMedia(`(min-width: ${DESKTOP_BREAKPOINT}px)`).matches
+      ? "desktop"
+      : "mobile"
+  );
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(`(min-width: ${DESKTOP_BREAKPOINT}px)`);
+    const handleChange = (event) => {
+      setDevice(event.matches ? "desktop" : "mobile");
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
 
   useEffect(() => {
     const fetchBanners = async () => {
+      setLoading(true);
+
       try {
-        const { data } = await getHeroBanners();
-        const banners = (data.data || []).map((b) => ({
+        const { data } = await getHeroBanners(device);
+        let banners = (data.data || []).map((b) => ({
           id: b._id,
           src: b.imageUrl,
           alt: b.alt || "Mobile accessories",
         }));
+
+        if (banners.length === 0 && device === "mobile") {
+          const fallback = await getHeroBanners("desktop");
+          banners = (fallback.data.data || []).map((b) => ({
+            id: b._id,
+            src: b.imageUrl,
+            alt: b.alt || "Mobile accessories",
+          }));
+        }
+
         setSlides(banners.length > 0 ? banners : FALLBACK_SLIDES);
         setCurrent(0);
       } catch {
@@ -37,7 +66,7 @@ function HeroBanner() {
     };
 
     fetchBanners();
-  }, []);
+  }, [device]);
 
   const goTo = useCallback(
     (index) => {
@@ -56,12 +85,12 @@ function HeroBanner() {
   }, [slides.length]);
 
   const bannerShellClass =
-    "relative w-full overflow-hidden bg-[#1a1a1a] aspect-[1920/340]";
+    "relative w-full overflow-hidden bg-[#1a1a1a]";
 
   if (loading) {
     return (
       <section className="relative left-1/2 w-screen max-w-[100vw] -translate-x-1/2">
-        <div className={`${bannerShellClass} animate-pulse`} />
+        <div className={`${bannerShellClass} min-h-[140px] animate-pulse sm:min-h-[180px]`} />
       </section>
     );
   }
@@ -73,21 +102,18 @@ function HeroBanner() {
     >
       <div className={bannerShellClass}>
         {slides.map((slide, index) => (
-          <div
+          <img
             key={slide.id}
-            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-              index === current ? "opacity-100" : "pointer-events-none opacity-0"
+            src={slide.src}
+            alt={slide.alt}
+            className={`block w-full h-auto max-w-full transition-opacity duration-700 ease-in-out ${
+              index === current
+                ? "relative z-10 opacity-100"
+                : "pointer-events-none absolute left-0 top-0 opacity-0"
             }`}
-            aria-hidden={index !== current}
-          >
-            <img
-              src={slide.src}
-              alt={slide.alt}
-              className="h-full w-full object-cover object-center"
-              loading={index === 0 ? "eager" : "lazy"}
-              draggable={false}
-            />
-          </div>
+            loading={index === 0 ? "eager" : "lazy"}
+            draggable={false}
+          />
         ))}
 
         {slides.length > 1 && (

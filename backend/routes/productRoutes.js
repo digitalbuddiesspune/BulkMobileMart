@@ -7,14 +7,15 @@ import {
   updateProduct,
   deleteProduct,
 } from "../controllers/productController.js";
+import { protect, requireAdmin } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 router.get("/", getProducts);
-router.get("/all", getAllProducts);
+router.get("/all", protect, requireAdmin, getAllProducts);
 router.get("/:id", getProductById);
-router.post("/", addProduct);
-router.put("/:id", updateProduct);
-router.delete("/:id", deleteProduct);
+router.post("/", protect, requireAdmin, addProduct);
+router.put("/:id", protect, requireAdmin, updateProduct);
+router.delete("/:id", protect, requireAdmin, deleteProduct);
 
 export default router;

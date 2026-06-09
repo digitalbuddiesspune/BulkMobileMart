@@ -39,6 +39,7 @@ export const signup = async (req, res) => {
       email: email.trim(),
       phone: phone.trim(),
       password,
+      role: "user",
     });
 
     const token = signToken(user._id);
@@ -51,6 +52,7 @@ export const signup = async (req, res) => {
           name: user.name,
           email: user.email,
           phone: user.phone,
+          role: user.role,
         },
         token,
       },
@@ -99,6 +101,7 @@ export const login = async (req, res) => {
           name: user.name,
           email: user.email,
           phone: user.phone,
+          role: user.role,
         },
         token,
       },
@@ -117,6 +120,7 @@ export const getMe = async (req, res) => {
         name: req.user.name,
         email: req.user.email,
         phone: req.user.phone,
+        role: req.user.role,
       },
     });
   } catch (error) {
@@ -126,8 +130,89 @@ export const getMe = async (req, res) => {
 
 export const getUsers = async (req, res) => {
   try {
-    const users = await User.find().select("-password").sort({ createdAt: -1 });
+    const users = await User.find({ role: { $ne: "admin" } })
+      .select("-password")
+      .sort({ createdAt: -1 });
     res.status(200).json({ success: true, data: users });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const updateUser = async (req, res) => {
+  try {
+    const { name, email, phone, password } = req.body;
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    if (email?.trim()) {
+      const existing = await User.findOne({
+        email: email.trim().toLowerCase(),
+        _id: { $ne: user._id },
+      });
+      if (existing) {
+        return res.status(409).json({
+          success: false,
+          message: "Email is already registered",
+        });
+      }
+      user.email = email.trim();
+    }
+
+    if (phone?.trim()) {
+      const existing = await User.findOne({
+        phone: phone.trim(),
+        _id: { $ne: user._id },
+      });
+      if (existing) {
+        return res.status(409).json({
+          success: false,
+          message: "Phone is already registered",
+        });
+      }
+      user.phone = phone.trim();
+    }
+
+    if (name?.trim()) user.name = name.trim();
+    if (password) user.password = password;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "User updated",
+      data: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
+    });
+  } catch (error) {
+    if (error.name === "ValidationError") {
+      const message = Object.values(error.errors)
+        .map((err) => err.message)
+        .join(", ");
+      return res.status(400).json({ success: false, message });
+    }
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({ success: true, message: "User deleted" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

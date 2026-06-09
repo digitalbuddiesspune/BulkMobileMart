@@ -1,43 +1,84 @@
 import { useEffect, useState } from "react";
-import { getUsers } from "../../../api/api";
+import { deleteUser, getUsers, updateUser } from "../../../api/api";
 import AdminAlert from "../AdminAlert";
-import { cardClass } from "../adminStyles";
+import UserEditModal from "../UserEditModal";
+import { btnDanger, btnSecondary, tableClass } from "../adminStyles";
 
 function UserSection() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [editingUser, setEditingUser] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const { data } = await getUsers();
+      setUsers(data.data || []);
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          "Failed to load users. Login as admin to view registered dealers."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setLoading(true);
-        setError("");
-        const { data } = await getUsers();
-        setUsers(data.data || []);
-      } catch (err) {
-        setError(
-          err.response?.data?.message ||
-            "Failed to load users. Login as admin to view registered dealers."
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchUsers();
   }, []);
 
+  const handleSave = async (id, payload) => {
+    try {
+      setSaving(true);
+      setError("");
+      setSuccess("");
+      await updateUser(id, payload);
+      setSuccess("User updated successfully");
+      setEditingUser(null);
+      fetchUsers();
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to update user");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this user? This cannot be undone.")) return;
+    try {
+      setError("");
+      setSuccess("");
+      await deleteUser(id);
+      setSuccess("User deleted");
+      if (editingUser?._id === id) setEditingUser(null);
+      fetchUsers();
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to delete user");
+    }
+  };
+
   return (
     <div>
-      <h2 className="mb-1 text-xl font-bold">Users</h2>
-      <p className="mb-5 text-sm text-text-secondary">
-        View registered dealer accounts. Login required to access this section.
-      </p>
+      <AdminAlert
+        error={error}
+        success={success}
+        onClear={() => {
+          setError("");
+          setSuccess("");
+        }}
+      />
 
-      <AdminAlert error={error} onClear={() => setError("")} />
+      <div className="mb-4">
+        <p className="text-sm text-text-secondary">
+          All users ({users.length})
+        </p>
+      </div>
 
-      <h3 className="mb-3 font-semibold">All Users ({users.length})</h3>
       {loading ? (
         <p className="text-text-secondary">Loading...</p>
       ) : users.length === 0 ? (
@@ -45,19 +86,23 @@ function UserSection() {
           {error ? "Could not load users." : "No registered users yet."}
         </p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border-light bg-white">
-          <table className="w-full min-w-[500px] text-left text-sm">
-            <thead className="border-b border-border-light bg-mobile-surface">
-              <tr>
+        <div className={tableClass}>
+          <table className="w-full min-w-[640px] text-left text-sm">
+            <thead>
+              <tr className="border-b border-border-light bg-mobile-surface">
                 <th className="px-4 py-3 font-semibold">Name</th>
                 <th className="px-4 py-3 font-semibold">Email</th>
                 <th className="px-4 py-3 font-semibold">Phone</th>
                 <th className="px-4 py-3 font-semibold">Joined</th>
+                <th className="px-4 py-3 font-semibold text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
               {users.map((user) => (
-                <tr key={user._id} className="border-b border-border-light last:border-0">
+                <tr
+                  key={user._id}
+                  className="border-b border-border-light last:border-0"
+                >
                   <td className="px-4 py-3 font-medium">{user.name}</td>
                   <td className="px-4 py-3 text-text-secondary">{user.email}</td>
                   <td className="px-4 py-3 text-text-secondary">{user.phone}</td>
@@ -66,6 +111,24 @@ function UserSection() {
                       ? new Date(user.createdAt).toLocaleDateString("en-IN")
                       : "—"}
                   </td>
+                  <td className="px-4 py-3">
+                    <div className="flex justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setEditingUser(user)}
+                        className={btnSecondary}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(user._id)}
+                        className={btnDanger}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -73,12 +136,12 @@ function UserSection() {
         </div>
       )}
 
-      <div className={`${cardClass} mt-6`}>
-        <p className="text-sm text-text-secondary">
-          User accounts are created when dealers sign up on the website.
-          Admin login is required to view this list.
-        </p>
-      </div>
+      <UserEditModal
+        user={editingUser}
+        onClose={() => setEditingUser(null)}
+        onSave={handleSave}
+        saving={saving}
+      />
     </div>
   );
 }

@@ -77,6 +77,18 @@ export function AuthProvider({ children }) {
     return res.data;
   };
 
+  const adminLogin = async (data) => {
+    const res = await loginUser(data);
+    const { user: authUser, token: authToken } = res.data.data;
+
+    if (authUser.role !== "admin") {
+      throw new Error("Access denied. Admin credentials required.");
+    }
+
+    persistAuth(authUser, authToken);
+    return res.data;
+  };
+
   const logout = () => {
     clearAuth();
   };
@@ -89,6 +101,7 @@ export function AuthProvider({ children }) {
         loading,
         signup,
         login,
+        adminLogin,
         logout,
         authModal,
         openAuthModal,
